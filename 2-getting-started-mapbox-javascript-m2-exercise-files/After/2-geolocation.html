@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head lang = "en">
+    <meta charset = "UTF-8">
+    <title></title>
+
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+
+    <script src='https://api.tiles.mapbox.com/mapbox.js/v2.0.1/mapbox.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox.js/v2.0.1/mapbox.css' rel='stylesheet' />
+
+    <script src='data/markers.js'></script>
+    <script src='data/paths.js'></script>
+
+    <style type = "text/css">
+        body { margin: 0; padding: 0 }
+        #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+    </style>
+
+    <script type = "text/javascript">
+        function setupMap() {
+            L.mapbox.accessToken = 'pk.eyJ1IjoiYWxleGtvcmJhbiIsImEiOiIxS0tMUEJvIn0.Oz2spiezkQycoGiIyxDPzg';
+            window.map = L.mapbox.map('map', null, { minZoom: 11 });
+
+            var layers = {
+                "Street map": L.mapbox.tileLayer('alexkorban.j9cm3nnl'),
+                "Elevations": L.mapbox.tileLayer('alexkorban.j9diij45')
+            };
+
+            layers["Street map"].addTo(map);
+            L.control.layers(layers).addTo(map);
+
+            L.control.scale({imperial: false, position: "bottomright"}).addTo(map);
+
+            map.setView([-41.2889, 174.7772], 12);
+        }
+
+        window.onload = function() {
+            setupMap();
+
+            var marker = L.marker(markers.features[0].geometry.coordinates.reverse(),
+                {title: markers.features[0].properties.description});
+            marker.addTo(map);
+
+            function onSuccess(position) {
+                marker.setLatLng([position.coordinates.latitude, position.coordinates.longitude]);
+            }
+
+            function onError(error) {
+                console.log("Position error: ", error.code, error.message);
+            }
+
+
+            window.watchId = navigator.geolocation.watchPosition(onSuccess, onError,
+                {maximumAge: 0, timeout: 60000, enableHighAccuracy: true});
+
+            // replace watchPosition with code below to animate
+            // a path from file instead of actual positions
+//            var i = 0;
+//            setInterval(function() {
+//                onSuccess({coordinates: {latitude: paths.features[0].geometry.coordinates[i][1], longitude: paths.features[0].geometry.coordinates[i][0]}});
+//                i++;
+//                if (i >= paths.features[0].geometry.coordinates.length)
+//                    i = 0;
+//            }, 1000);
+
+        };
+
+        function stopPositions() {
+            navigator.geolocation.clearWatch(window.watchId);
+        }
+
+        function watchPositions() {
+            setInterval(function() {
+                navigator.geolocation.getCurrentPosition(onSuccess, onError,
+                    {maximumAge: 0, timeout: 60000, enableHighAccuracy: true});
+            }, 1000);
+        }
+
+
+    </script>
+
+
+</head>
+<body>
+<div id = "map"></div>
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head lang = "en">
+    <meta charset = "UTF-8">
+    <title></title>
+
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+
+    <script src='https://api.tiles.mapbox.com/mapbox.js/v2.0.1/mapbox.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox.js/v2.0.1/mapbox.css' rel='stylesheet' />
+
+    <style type = "text/css">
+        body { margin: 0; padding: 0 }
+        #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+        .icon {
+            -webkit-filter: drop-shadow(0px 0px 3px rgba(1, 1, 1, 1));
+        }
+    </style>
+
+    <script src='data/markers.js'></script>
+    <script src='data/paths.js'></script>
+    <script src='data/roadworks.js'></script>
+    <script src='data/suburbs.js'></script>
+
+    <script type = "text/javascript">
+        function setupMap() {
+            L.mapbox.accessToken = 'pk.eyJ1IjoiYWxleGtvcmJhbiIsImEiOiIxS0tMUEJvIn0.Oz2spiezkQycoGiIyxDPzg';
+            window.map = L.mapbox.map('map', null, { minZoom: 11 });
+
+            var layers = {
+                "Street map": L.mapbox.tileLayer('alexkorban.j9cm3nnl'),
+                "Elevations": L.mapbox.tileLayer('alexkorban.j9diij45')
+            };
+
+            layers["Street map"].addTo(map);
+            L.control.layers(layers).addTo(map);
+
+            L.control.scale({imperial: false, position: "bottomright"}).addTo(map);
+
+            map.setView([-41.2889, 174.7772], 12);
+        }
+
+        function showMarkers() {
+            var icons = {
+                "Truck": L.icon({
+                    iconUrl: "images/truck.png",
+                    iconSize: [30, 15],
+                    className: "icon"
+                }),
+                "Van": L.icon({
+                    iconUrl: "images/van.png",
+                    iconSize: [30, 15],
+                    className: "icon"
+                }),
+                "Scooter": L.icon({
+                    iconUrl: "images/scooter.png",
+                    iconSize: [25, 15],
+                    className: "icon"
+                })
+            };
+
+            var layer = L.geoJson(markers, {
+                pointToLayer: function(feature, latLng) {
+                    return L.marker(latLng, {
+                        title: feature.properties.title,
+                        icon: icons[feature.properties.description]
+                    });
+                },
+                onEachFeature: function (feature, layer) {
+                    layer.bindPopup(feature.properties.title);
+                }
+            });
+
+            layer.addTo(map);
+        }
+
+        function showRoute() {
+            var latLngs = paths.features[0].geometry.coordinates;
+            latLngs.forEach(function(latLng) { latLng.reverse(); });  // reverse lat/lng order
+
+            L.polyline(latLngs, {color: "#FF8C00", weight: 3, opacity: 0.7}).addTo(map);
+        }
+
+        function showRoadworks() {
+            var latLngs = roadworks.features[0].geometry.coordinates;
+            latLngs[0].forEach(function(latLng) { latLng.reverse(); });  // reverse lat/lng order
+
+            var polygon = L.polygon(latLngs, {
+                fillColor: "#aa0000",
+                fillOpacity: 0.3,
+                color: "#aa0000"}).addTo(map);
+        }
+
+        window.onload = function() {
+            setupMap();
+            showMarkers();
+            showRoute();
+            showRoadworks();
+
+        };
+    </script>
+
+
+</head>
+<body>
+<div id = "map"></div>
+</body>
+</html>

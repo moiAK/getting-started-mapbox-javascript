@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head lang = "en">
+    <meta charset = "UTF-8">
+    <title></title>
+
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+
+    <script src='https://api.tiles.mapbox.com/mapbox.js/v2.0.1/mapbox.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox.js/v2.0.1/mapbox.css' rel='stylesheet' />
+
+    <style type = "text/css">
+        body { margin: 0; padding: 0 }
+        #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+    </style>
+
+    <script src='data/markers.js'></script>
+
+    <script type = "text/javascript">
+        function setupMap() {
+            L.mapbox.accessToken = 'pk.eyJ1IjoiYWxleGtvcmJhbiIsImEiOiIxS0tMUEJvIn0.Oz2spiezkQycoGiIyxDPzg';
+            window.map = L.mapbox.map('map', null, { minZoom: 11 });
+
+            var layers = {
+                "Street map": L.mapbox.tileLayer('alexkorban.j9cm3nnl'),
+                "Elevations": L.mapbox.tileLayer('alexkorban.j9diij45')
+            };
+
+            layers["Street map"].addTo(map);
+            L.control.layers(layers).addTo(map);
+
+            L.control.scale({imperial: false, position: "bottomright"}).addTo(map);
+
+            map.setView([-41.2889, 174.7772], 12);
+        }
+
+        window.onload = function() {
+            setupMap();
+
+            var layer = L.mapbox.featureLayer(markers).addTo(map);
+
+
+        };
+    </script>
+
+
+</head>
+<body>
+<div id = "map"></div>
+</body>
+</html>

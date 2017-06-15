@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head lang = "en">
+    <meta charset = "UTF-8">
+    <title></title>
+
+    <script src = 'https://api.tiles.mapbox.com/mapbox-gl-js/v0.2.2/mapbox-gl.js'></script>
+    <link href = 'https://api.tiles.mapbox.com/mapbox-gl-js/v0.2.2/mapbox-gl.css' rel = 'stylesheet' />
+
+
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+
+    <style type = "text/css">
+        body { margin: 0; padding: 0; }
+        #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+    </style>
+
+    <script type = "text/javascript">
+        window.onload = function() {
+            mapboxgl.accessToken = "pk.eyJ1IjoiYWxleGtvcmJhbiIsImEiOiIxS0tMUEJvIn0.Oz2spiezkQycoGiIyxDPzg";
+
+            window.map = new mapboxgl.Map({
+                container: "map",
+                style: "https://www.mapbox.com/mapbox-gl-styles/styles/satellite.json",
+                center: [-41.2889, 174.7772],
+                zoom: 12
+            });
+
+            map.addControl(new mapboxgl.Navigation());
+
+
+        }
+    </script>
+
+</head>
+<body>
+<div id = "map"></div>
+</body>
+</html>
